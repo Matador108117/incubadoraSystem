@@ -1,32 +1,17 @@
 package app;
-
-import java.io.InputStream;
-import java.io.IOException;
 import java.util.Properties;
+import helpers.ConfigLoader;
 import server.Server;
 import models.DTOS.DepencyDto;
 
 public class app {
     public static void main(String[] args) {
-        Properties properties = new Properties();
-        try (InputStream input = app.class
-                .getClassLoader()
-                .getResourceAsStream("app.properties")) {
-
-            if (input == null) {
-                System.out.println("No se encontró app.properties");
-                return;
-            }
-
-            properties.load(input);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        DepencyDto depency = new DepencyDto(Integer.parseInt(properties.getProperty("server.port")),
-                properties.getProperty("server.host"),
-                Integer.parseInt(properties.getProperty("server.delay")),
-                Integer.parseInt(properties.getProperty("server.cycles")));
+         Properties props = ConfigLoader.load();
+        int port = Integer.parseInt(props.getProperty("server.port"));
+        int delay = Integer.parseInt(props.getProperty("server.delay"));
+        int cycles = Integer.parseInt(props.getProperty("server.cycles"));
+        String host = props.getProperty("server.host");
+        DepencyDto depency = new DepencyDto(port, host, delay, cycles);
         Server server = new Server(depency);
         server.start();
 
